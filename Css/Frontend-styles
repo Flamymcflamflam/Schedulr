@@ -1,0 +1,76 @@
+:root {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: #0b0c10;
+  color: #e7eaf0;
+}
+
+.container {
+  max-width: 900px;
+  margin: 48px auto;
+  padding: 0 16px;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 0.25rem;
+}
+
+.sub {
+  opacity: 0.8;
+  margin-bottom: 1rem;
+}
+
+.card {
+  background: #14161c;
+  border: 1px solid #272a33;
+  border-radius: 14px;
+  padding: 16px;
+  margin-top: 14px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+}
+
+input[type="file"] {
+  display: block;
+  margin-bottom: 12px;
+}
+
+button {
+  background: #4f7cff;
+  border: none;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+button:hover { filter: brightness(1.05); }
+
+#status {
+  margin-top: 10px;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.hidden { display: none; }
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 0.95rem;
+}
+
+th, td {
+  border-bottom: 1px solid #242833;
+  padding: 8px 6px;
+  text-align: left;
+}
+
+th { opacity: 0.8; }
+tbody tr:hover { background: #1b1e27; }

@@ -1,0 +1,53 @@
+# === Node Modules ===
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# === Environment Variables ===
+.env
+.env.local
+.env.*.local
+
+# === Logs ===
+logs
+*.log
+*.log.*
+log/
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# === System Files ===
+.DS_Store
+Thumbs.db
+
+# === Uploaded Files (PDFs from users) ===
+uploads/
+
+# === Build / Cache ===
+dist/
+coverage/
+.cache/
+.tmp/
+
+# === IDE / Editor Files ===
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# === OS Temporary Files ===
+*.tmp
+*.temp
+~*
+
+# === Testing Artifacts ===
+*.out
+*.obj
+*.test
+*.spec
+jest-reporters/
+
+# === Misc ===
+*.bak

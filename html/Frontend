@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ENTI 333 Course Outline Scheduler</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <main class="container">
+    <h1>Course Outline → Schedule</h1>
+    <p class="sub">
+      Upload your UCalgary course outlines (PDF/DOCX). The AI will pull all due dates and tests into a schedule.
+    </p>
+
+    <section class="card">
+      <input id="files" type="file" multiple accept=".pdf,.docx,.txt"/>
+      <button id="uploadBtn">Create Schedule</button>
+      <div id="status"></div>
+    </section>
+
+    <section class="card hidden" id="resultsCard">
+      <div class="row">
+        <h2>Your Schedule</h2>
+        <button id="downloadIcsBtn">Download .ics</button>
+      </div>
+      <table id="eventsTable">
+        <thead>
+          <tr>
+            <th>Date</th><th>Course</th><th>Item</th><th>Type</th><th>Weight</th><th>Notes</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

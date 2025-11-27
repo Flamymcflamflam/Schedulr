@@ -1,0 +1,58 @@
+.app-bg {
+	min-height: 100vh;
+	background-color: #f5f7fb;
+	background-image: url('/assets/Images/Background.jpg');
+	background-size: cover;
+	background-position: center center;
+	background-repeat: no-repeat;
+}
+
+/* Page typography */
+body {
+	font-family: system-ui, Arial, sans-serif;
+	color: #111;
+}
+
+/* Main content container: subtle translucent backdrop + blur for readability */
+.container {
+	max-width: 900px;
+	margin: 32px auto;
+	padding: 24px;
+	background: rgba(255,255,255,0.65);
+	border-radius: 10px;
+	box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+	backdrop-filter: blur(4px);
+}
+
+/* Cards stay slightly more opaque */
+.card {
+	background: rgba(255,255,255,0.92);
+	padding: 16px;
+	border-radius: 8px;
+	box-shadow: 0 1px 8px rgba(0,0,0,0.08);
+	margin-bottom: 16px;
+}
+
+.row { display:flex; justify-content:space-between; align-items:center; }
+.hidden { display:none; }
+
+table { width:100%; border-collapse:collapse; }
+th, td { text-align:left; padding:8px; border-bottom:1px solid #eee; }
+#status { margin-top:8px; color:#444; }
+
+/* Improve text contrast over the hero background */
+h1, h2 { text-shadow: 0 2px 6px rgba(0,0,0,0.35); }
+p, .sub, th, td, label, button { text-shadow: 0 1px 2px rgba(255,255,255,0.6); }
+
+/* Buttons */
+button {
+	background: #0b63d6;
+	color: #fff;
+	border: none;
+	padding: 8px 12px;
+	border-radius: 6px;
+	cursor: pointer;
+}
+
+button:hover { opacity: 0.95; }
+

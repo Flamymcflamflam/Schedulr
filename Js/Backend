@@ -1,0 +1,190 @@
+// server.js
+import express from "express";
+import multer from "multer";
+import fs from "fs/promises";
+import path from "path";
+import pdf from "pdf-parse";
+import mammoth from "mammoth";
+import OpenAI from "openai";
+
+const app = express();
+const upload = multer({ dest: "uploads/" });
+const PORT = process.env.PORT || 3000;
+
+app.use(express.json({ limit: "2mb" }));
+app.use(express.static("public"));
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+// ---------- helpers ----------
+async function extractText(filePath, mimetype) {
+  if (mimetype === "application/pdf") {
+    const data = await fs.readFile(filePath);
+    const parsed = await pdf(data);
+    return parsed.text;
+  }
+
+  // docx
+  if (
+    mimetype ===
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+    filePath.endsWith(".docx")
+  ) {
+    const result = await mammoth.extractRawText({ path: filePath });
+    return result.value;
+  }
+
+  // fallback plain text
+  const data = await fs.readFile(filePath, "utf8");
+  return data;
+}
+
+function toICS(events) {
+  // super small ICS generator (good enough for MVP)
+  const header = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//ENTI333 Course Scheduler//EN",
+  ];
+
+  const body = events.map((e, i) => {
+    // Expect ISO like 2025-01-31
+    const dt = e.date.replace(/-/g, "");
+    const uid = `event-${i}-${Date.now()}@enti333.local`;
+    return [
+      "BEGIN:VEVENT",
+      `UID:${uid}`,
+      `DTSTAMP:${dt}T000000Z`,
+      `DTSTART;VALUE=DATE:${dt}`,
+      `SUMMARY:${e.course} - ${e.title}`,
+      e.weight ? `DESCRIPTION:Weight ${e.weight}%` : "DESCRIPTION:",
+      "END:VEVENT",
+    ].join("\n");
+  });
+
+  const footer = ["END:VCALENDAR"];
+  return [...header, ...body, ...footer].join("\n");
+}
+
+// ---------- schema for Structured Outputs ----------
+const scheduleSchema = {
+  name: "course_schedule_extraction",
+  schema: {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+      course_name: { type: "string" },
+      term: { type: "string" },
+      items: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            title: { type: "string" },
+            type: {
+              type: "string",
+              enum: ["assignment", "quiz", "midterm", "final", "project", "lab", "other"],
+            },
+            date: {
+              type: "string",
+              description: "ISO date YYYY-MM-DD. If only month/day given, infer year from term."
+            },
+            time: { type: "string", description: "Optional, e.g. 14:00 or 'in class'." },
+            weight: { type: "number", description: "Percent weight if stated." },
+            notes: { type: "string" }
+          },
+          required: ["title", "type", "date"]
+        }
+      }
+    },
+    required: ["course_name", "items"]
+  }
+};
+
+async function extractScheduleWithAI(text) {
+  // Use Responses API + Structured Outputs :contentReference[oaicite:1]{index=1}
+  const response = await openai.responses.create({
+    model: "gpt-4o-mini",
+    input: [
+      {
+        role: "system",
+        content:
+          "You extract assessment dates from university course outlines. " +
+          "Return ONLY valid JSON following the schema. If dates are ranges, " +
+          "use the due date. If no year is given, infer from term."
+      },
+      {
+        role: "user",
+        content:
+          "Extract all assignments, quizzes, midterms, finals, labs, projects " +
+          "and their dates from this course outline:\n\n" + text
+      }
+    ],
+    response_format: {
+      type: "json_schema",
+      json_schema: scheduleSchema
+    }
+  });
+
+  return response.output_parsed; // SDK parses to object when using json_schema
+}
+
+// ---------- routes ----------
+app.post("/api/upload", upload.array("files"), async (req, res) => {
+  try {
+    const files = req.files || [];
+    if (!files.length) {
+      return res.status(400).json({ error: "No files uploaded." });
+    }
+
+    const allEvents = [];
+    const perCourse = [];
+
+    for (const f of files) {
+      const text = await extractText(f.path, f.mimetype);
+      const extracted = await extractScheduleWithAI(text);
+
+      perCourse.push(extracted);
+
+      for (const item of extracted.items) {
+        allEvents.push({
+          course: extracted.course_name,
+          title: item.title,
+          type: item.type,
+          date: item.date,
+          time: item.time || "",
+          weight: item.weight ?? null,
+          notes: item.notes || ""
+        });
+      }
+
+      await fs.unlink(f.path);
+    }
+
+    // sort by date
+    allEvents.sort((a, b) => a.date.localeCompare(b.date));
+
+    res.json({ courses: perCourse, events: allEvents });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: "Failed to process outlines.",
+      details: err.message
+    });
+  }
+});
+
+app.post("/api/ics", (req, res) => {
+  const { events } = req.body;
+  if (!events?.length) return res.status(400).send("No events.");
+
+  const ics = toICS(events);
+  res.setHeader("Content-Type", "text/calendar");
+  res.setHeader("Content-Disposition", "attachment; filename=schedule.ics");
+  res.send(ics);
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
