@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://schedulr-backend.onrender.com";
+const API_BASE_URL = "https://schedulr-backend-n65e.onrender.com";
 const filesInput = document.getElementById("files");
 const uploadBtn = document.getElementById("uploadBtn");
 const statusEl = document.getElementById("status");
