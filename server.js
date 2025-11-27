@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import multer from "multer";
 import fs from "fs";
 import fsp from "fs/promises";
@@ -11,6 +12,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
+app.use(cors());
 const upload = multer({ dest: "uploads/" });
 const PORT = process.env.PORT || 3000;
 
