@@ -1,3 +1,4 @@
+const API_BASE_URL = "https://schedulr-backend.onrender.com";
 const filesInput = document.getElementById("files");
 const uploadBtn = document.getElementById("uploadBtn");
 const statusEl = document.getElementById("status");
@@ -21,7 +22,7 @@ uploadBtn.addEventListener("click", async () => {
     const form = new FormData();
     for (const f of files) form.append("files", f);
 
-    const res = await fetch("/api/upload", { method: "POST", body: form });
+    const res = await fetch(`${API_BASE_URL}/api/upload`, { method: "POST", body: form });
     const data = await res.json();
 
     if (!res.ok) throw new Error(data.error || "Upload failed.");
@@ -41,7 +42,7 @@ uploadBtn.addEventListener("click", async () => {
 downloadIcsBtn.addEventListener("click", async () => {
   if (!latestEvents.length) return;
 
-  const res = await fetch("/api/ics", {
+  const res = await fetch(`${API_BASE_URL}/api/ics`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ events: latestEvents })
