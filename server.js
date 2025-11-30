@@ -283,6 +283,7 @@ async function extractScheduleWithAI(text) {
           content:
             "Imagine you are a university student building a semester schedule. " +
             "Using ALL of the provided documents, find every dated item (assignments, quizzes, midterms, finals, projects, labs), and also include non-school dated items like work schedules or personal events. " +
+            "IMPORTANT: Only extract items that will be graded or count toward the final grade. Exclude any items that are for reference only or non-graded activities. " +
             "For each item return: title, type (assignment/quiz/midterm/final/project/lab/work/personal/other), date as YYYY-MM-DD, optional time, weight in percent if stated, and notes. " +
             "When a date is given as a range, use the latest date in the range as the due date. If a year is missing, infer the most likely year for the semester (prefer the upcoming year/term). " +
             "Additionally, for each item compute reminders exactly 7, 5, and 3 days before the due date and include them as ISO dates in the 'reminders' array (omit reminders that would fall before year 1900). " +
