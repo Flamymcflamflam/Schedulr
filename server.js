@@ -281,14 +281,16 @@ async function extractScheduleWithAI(text) {
         {
           role: "user",
           content:
-            "Imagine you are a university student building a semester schedule. " +
-            "Using ALL of the provided documents, find every dated item (assignments, quizzes, midterms, finals, projects, labs), and also include non-school dated items like work schedules or personal events. " +
-            "IMPORTANT: Only extract items that will be graded or count toward the final grade. Exclude any items that are for reference only or non-graded activities. " +
-            "For each item return: title, type (assignment/quiz/midterm/final/project/lab/work/personal/other), date as YYYY-MM-DD, optional time, weight in percent if stated, and notes. " +
-            "When a date is given as a range, use the latest date in the range as the due date. If a year is missing, infer the most likely year for the semester (prefer the upcoming year/term). " +
-            "Additionally, for each item compute reminders exactly 7, 5, and 3 days before the due date and include them as ISO dates in the 'reminders' array (omit reminders that would fall before year 1900). " +
-            "Make sure to use all documents to find all tests and assignments. If a document is not a course outline (for example a work schedule), include those dated events as type 'work' or 'personal' as appropriate. " +
-            "If you cannot find a course name for an item, set course_name to 'Unknown Course'. Return one JSON object per document with 'course_name' and 'items'. The 'items' array may be empty if no dated items are found.\n\n" +
+            "You are extracting graded assessments from course outlines. Be precise and conservative. " +
+            "Extract ONLY items that are explicitly graded assessments with clear due dates. Do NOT invent or infer items that are not explicitly stated. " +
+            "For school items: extract assignments, quizzes, midterms, finals, projects, labs, and exams ONLY if they have a specific due date AND a grading weight/percentage is stated or clearly implied. " +
+            "For non-school items: include work schedules or personal events with clear dates. " +
+            "CRITICAL: If an item does not have a weight percentage stated in the document, set weight to null - do NOT guess or assume. " +
+            "For each item return: title (exactly as stated), type (assignment/quiz/midterm/final/project/lab/work/personal/other), date as YYYY-MM-DD, optional time, weight in percent (or null if not stated), and notes. " +
+            "When a date is given as a range, use the latest date in the range as the due date. If a year is missing, infer the most likely year (prefer current/upcoming semester). " +
+            "For each item, compute reminders exactly 7, 5, and 3 days before the due date and include them as ISO dates in the 'reminders' array (omit dates before year 1900). " +
+            "Extract the course name from the document. If uncertain, set to 'Unknown Course'. " +
+            "Return one JSON object per document with 'course_name' and 'items' array. Return empty 'items' array if no explicit graded items are found.\n\n" +
             text
         }
       ],
