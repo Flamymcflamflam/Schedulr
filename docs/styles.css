@@ -1,7 +1,7 @@
 .app-bg {
 	min-height: 100vh;
 	background-color: #f5f7fb;
-	background-image: url('/assets/Images/Background.jpg');
+	background-image: url('./Assets/Images/Background.jpg');
 	background-size: cover;
 	background-position: center center;
 	background-repeat: no-repeat;
